@@ -1,5 +1,7 @@
 # Spotify With YouTube
 
+<p align="center"><img src="assets/readme-hero.svg" width="100%" alt="SPOTIFY-WITH-YOUTUBE visual montage" /></p>
+
 **Choose a track in Spotify. Watch a corresponding video in SmartTube.**
 
 A local Python bridge for **macOS + Android TV / Google TV**. It reads Spotify
