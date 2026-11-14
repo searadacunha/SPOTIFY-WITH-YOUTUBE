@@ -226,7 +226,7 @@ not distribute SmartTube or media files.
 
 ---
 
-## Development credits
+## Contributors and AI assistance
 
 **Benjamin Da Cunha:** project direction, requirements and final decisions.
 
