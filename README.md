@@ -1,6 +1,6 @@
 # Spotify With YouTube
 
-<p align="center"><img src="assets/readme-hero.svg" width="100%" alt="SPOTIFY-WITH-YOUTUBE visual montage" /></p>
+<p align="center"><img src="assets/readme-hero-photo.jpg" width="100%" alt="SPOTIFY-WITH-YOUTUBE visual montage" /></p>
 
 **Choose a track in Spotify. Watch a corresponding video in SmartTube.**
 
