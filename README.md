@@ -223,15 +223,3 @@ track IDs and the TV's network address; review them before sharing diagnostics.
 
 Not affiliated with Spotify, Google, YouTube or SmartTube. This repository does
 not distribute SmartTube or media files.
-
----
-
-## Contributors and AI assistance
-
-**Benjamin Da Cunha:** project direction, requirements and final decisions.
-
-**Claude Code (Anthropic):** AI-assisted implementation and development.
-
-**ChatGPT (OpenAI):** assistance with Spotify-to-YouTube/SmartTube architecture, matching and ADB workflows, testing strategy and documentation.
-
-These credits disclose AI assistance; they do not assign human authorship, independently verify research findings or imply that an AI tool is a GitHub account contributor.
