@@ -89,10 +89,30 @@ It still reads the TV and writes local diagnostic logs.
 ./smarttube logs
 ```
 
-The service starts disarmed, but **selecting the TV from Spotify Connect on your phone and starting a song** now activates it automatically, without manually opening Spotify on the TV, when its Spotify media session is readable over ADB. Choosing a song directly in Spotify TV still works. `./smarttube resume` remains available to adopt a manually opened SmartTube video. Set `spotify_connect_autostart` to `false` to restore the prior manual-only mode.
+The default `tv` source can start SmartTube when you choose the TV in Spotify Connect **without manually opening Spotify TV**, provided Android exposes Spotify TV's playing media session. **Google Cast is different**: if the TV media session stays empty, use the opt-in `connect` source below. `./smarttube resume` remains available, and `spotify_connect_autostart: false` disables remote activation.
 
-Full setup, optional Spotify Web API login and updates:
-[Installation guide](docs/INSTALLATION.md).
+### When playback starts on the phone but the TV session is empty
+
+Set up the Spotify Web API with your own app ID (Spotify Premium required in Development Mode), then:
+
+```sh
+cp .env.example .env                # enter SPOTIFY_CLIENT_ID
+./smarttube login                  # Spotify OAuth in your browser
+# Now select your TV in Spotify on the phone and start a song
+./smarttube devices                # copy the exact active TV device id
+```
+
+Change your private `config.json` to `"spotify_source": "connect"` and
+`"spotify_connect_device_id": "<id shown by devices>"`, then run
+`./smarttube stop && ./smarttube start`. Only playback **on that exact device**
+will trigger SmartTube; playing music on the phone or another speaker will not.
+This mode works only if the Spotify API exposes the TV/Cast receiver as an active
+playback device. The Mac and TV still need ADB connectivity. API rate limits can
+delay detection, and SmartTube taking audio focus can interrupt the Spotify
+receiver. Automatic next-track handoff is supported only with the native `tv`
+source, not `connect`; select the next track from the phone.
+
+Full setup and updates: [Installation guide](docs/INSTALLATION.md).
 
 ## Commands
 
@@ -109,6 +129,7 @@ Run commands from the checkout; the launcher uses its `.venv`.
 | `./smarttube resume` | Explicitly adopt the current SmartTube session |
 | `./smarttube logs` | Follow the log; Ctrl-C stops only the log viewer |
 | `./smarttube login` | Authorize the optional Spotify Web API source |
+| `./smarttube devices` | List Spotify playback devices and IDs for remote-phone mode |
 
 ### Try the matcher without Spotify or a TV
 
@@ -180,7 +201,7 @@ Audio similarity compares YouTube publications, not Spotify's actual stream. The
 thresholds are empirical and no catalogue-wide error rate has been established.
 A delivered Android intent also does not prove the video actually played.
 
-The service targets one TV and macOS. Phone-originated Spotify Connect requires the TV Spotify app's own media session; Chromecast/Google Cast receivers may not be visible to this source. Remote activation has unit tests but still needs real-TV validation. Official YouTube TV is not supported with the same ownership checks as SmartTube. See [all limitations](docs/LIMITATIONS.md).
+The service targets one TV and macOS. The default `tv` source needs the Spotify TV app's media session. The optional `connect` source instead reads Spotify's playback API and requires the exact target device ID, but Spotify's API may not expose every Cast receiver. Remote activation is covered by unit tests, not yet validated against the actual TV and phone together. Official YouTube TV is not supported with the same ownership checks as SmartTube. See [all limitations](docs/LIMITATIONS.md).
 
 ## Development
 
