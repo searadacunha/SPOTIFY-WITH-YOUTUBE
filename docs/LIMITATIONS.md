@@ -21,6 +21,11 @@ Honest list of what the bridge does not do, as of rules version 7.
 - The `macos` and `web` sources are implemented and unit-tested but were not
   exercised end to end during this project's validation (the TV source was the one
   in use).
+- The opt-in `connect` source reads Spotify's Web API, **only for an explicitly
+  configured device ID**. The API may omit Google Cast receivers or report
+  unstable/missing device IDs. Spotify Premium is required for Development Mode,
+  and rate limits can prevent near-instant polling. It cannot turn SmartTube into
+  a native Spotify Connect target. It has offline tests but no real TV validation.
 
 ## Matching
 
