@@ -55,8 +55,33 @@ Edit `config.json`: set `tv_target` to the exact `host:port` shown by `adb devic
 Leave the rest initially. By default, `spotify_connect_autostart` is `true`: a new Spotify Connect song selected on the phone and played on the TV can trigger SmartTube without first opening Spotify on the TV. Set it to `false` for manual-only activation. The complete defaults are in `config.example.json`;
 matching settings are explained in [MATCHING.md](MATCHING.md). The file is git-ignored.
 
-Optional, only for the Spotify Web API source: `cp .env.example .env`, set
-`SPOTIFY_CLIENT_ID`, run `./smarttube login`.
+### If phone playback does not create a Spotify TV media session
+
+The default `spotify_source: tv` reads the Android media session from the Spotify
+TV application. Some phone-to-TV connections instead use Google Cast. To monitor
+the Spotify Connect/Cast device without opening Spotify TV, use the optional
+`spotify_source: connect` mode (requires Spotify's Web API):
+
+1. Create a Spotify developer app with redirect URI `http://127.0.0.1:8765/callback`.
+   Development Mode requires a Spotify Premium account and is rate-limited.
+2. Run `cp .env.example .env`, set `SPOTIFY_CLIENT_ID` to your app's client ID,
+   then run `./smarttube login` to grant the required read-only scopes.
+3. From Spotify on the phone, choose the TV and start a song. Run
+   `./smarttube devices` to find the exact active device ID. If it has no ID or
+   is not listed, the Spotify API cannot identify this receiver reliably.
+4. Set `"spotify_source": "connect"` and
+   `"spotify_connect_device_id": "YOUR_TV_DEVICE_ID"` in your private `config.json`.
+   Leave `spotify_connect_autostart: true`. Restart the service.
+
+The bridge then reads playback only for that exact device; music played on the
+phone or another speaker will not take over the TV. SmartTube is still opened
+by ADB, and the Mac must be running. This is a poll-based integration and can be
+delayed by Spotify API limits. The receiver may be paused when SmartTube takes
+audio focus; use the phone to select another song. Only the native TV source
+supports the existing automatic clip-end Spotify next-track handoff.
+
+For `spotify_source: web` (unfiltered listening, no auto-activation), only the
+Spotify API login is needed; `connect` additionally requires the device ID.
 
 ## 5. Checks
 
