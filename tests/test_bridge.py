@@ -97,7 +97,7 @@ class StorageAndLoopTests(Fixtures):
 
     def test_switch_during_active_resolution_cancels_before_dispatch(self):
         self.store.db.execute("DELETE FROM matches")
-        other = Track("1" * 22, "Another", ("Artist",), 200)
+        other = Track("1" * 22, "Papaoutai", ("Stromae",), 232)  # different track ID, same song; cache match stays valid
         self.store.remember(other, self.cfg, self.video)
         self.source.current.side_effect = [self.track, other]
         bridge = self.bridge()
