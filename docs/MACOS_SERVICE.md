@@ -46,8 +46,9 @@ Manual equivalents: `launchctl print gui/$(id -u)/local.spotify-smarttube`,
   exits with "Another instance is already running". `./smarttube test` (dry run)
   does not take the lock.
 - After `SIGKILL`, launchd restarts the service (verified: pid replaced, `runs`
-  counter incremented). The new process starts disarmed until Spotify TV is in front
-  or `./smarttube resume`. `handled_tracks` keeps the last sent track from replaying.
+  counter incremented). The new process starts disarmed until a new TV Spotify track is playing
+  (including a Spotify Connect selection from the phone), Spotify TV is in
+  front, or `./smarttube resume` is called. `handled_tracks` keeps the last sent track from replaying.
 - Logs: `logs/bridge.log` (application, rotating 2 MB × 4) and `logs/launchd.log`
   (anything printed before logging is initialised, for example a missing module).
 
