@@ -97,10 +97,7 @@ guards. `uncertain` verdicts are not failures: the bridge refuses to guess.
 
 ## User priority (manual override)
 
-**The service runs, Spotify changes tracks, nothing is sent; the log says
-`MANUAL_OVERRIDE_ACTIVE open Spotify on the TV or resume`** — Normal after every start while
-another app is in front. Open Spotify on the TV and pick a track, or open SmartTube,
-play any video, then `./smarttube resume` on the Mac.
+**The service runs, Spotify changes tracks, nothing is sent; the log says `MANUAL_OVERRIDE_ACTIVE open Spotify on the TV or resume`** — After startup, start a new track on the TV via Spotify Connect from the phone. The log should show `MANUAL_OVERRIDE_EXIT Spotify Connect`. If not, run `./smarttube check` while the song is playing: the TV source must see a Spotify TV media session. Connecting to a separate Chromecast receiver may not work. You can also pick a track directly in Spotify on the TV, or use `./smarttube resume` while SmartTube plays.
 
 **`MANUAL_OVERRIDE_ENTER <reason>` appeared and sync stopped** — You (or the TV)
 left SmartTube, paused, stopped or replaced the video the bridge sent, or the TV
