@@ -32,12 +32,26 @@ class Bridge:
         self.destination = (cfg["tv_target"], cfg["smarttube_package"])
         self.generation = None
         self.next_control_check = 0
+        # A fresh Spotify TV media session is also a user action when the phone
+        # transfers playback via Spotify Connect. It need not show Spotify's UI.
+        self.connect_observed = None
 
     def step(self):
         try:
+            preloaded, track_loaded = None, False
+            if (not self.dry_run and self.cfg.get("spotify_connect_autostart", False)
+                    and self.source.name == "tv"):
+                # Read playback BEFORE focus/ownership checks: Spotify Connect may
+                # start the TV media session without foregrounding Spotify.
+                preloaded = self.source.current()
+                track_loaded = True
+                track_id = preloaded.id if preloaded else None
+                if track_id and track_id != self.connect_observed:
+                    self.tv.claim_for_connect(track_id)
+                self.connect_observed = track_id
             if not self.dry_run:
                 self.generation = self.tv.check_control()["generation"]
-            return self._step()
+            return self._step(preloaded, track_loaded=track_loaded)
         except TrackChanged:
             self.cancel_pending()
             LOG.info("STALE: Spotify changed or paused during resolution; pending work cancelled")
@@ -75,8 +89,9 @@ class Bridge:
                     self.cancel_pending()
                     return
 
-    def _step(self):
-        track = self.source.current()
+    def _step(self, track=None, *, track_loaded=False):
+        if not track_loaded:
+            track = self.source.current()
         if not track:
             return "idle"
         if track.id != self.last_observed:
