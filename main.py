@@ -141,7 +141,7 @@ class Bridge:
             (ROOT / "logs/last-match.json").write_text(json.dumps(
                 {"track": asdict(track), **({"error": error} if error else {}), "ranking": ranking}, ensure_ascii=False, indent=2))
             if not selected or selected.tier != 1:
-                LOG.info("NO VERIFIED CLIP (%s): most viewed video instead", error or (selected.kind if selected else "no match"))
+                LOG.info("NO VERIFIED CLIP (%s): attempt same-song conservative fallback only", error or (selected.kind if selected else "no match"))
                 selected = most_viewed(track, ranking) or selected
             candidate = selected.candidate if selected else None
             if not self.dry_run:
