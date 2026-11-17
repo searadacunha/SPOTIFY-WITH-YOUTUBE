@@ -110,6 +110,31 @@ class SmartTube:
                     LOG.warning("MANUAL_OVERRIDE_ENTER %s", reason)
         raise ManualOverride(reason)
 
+    def claim_for_connect(self, track_id):
+        """A *new playing* Spotify TV track can be selected remotely via Connect.
+
+        Called only after the TV media probe saw a new, valid playing track; no
+        ADB/media metadata is trusted solely because another app is foreground.
+        The pending claim is time-limited and bound to the observed foreground.
+        """
+        if self.store is None:
+            raise RuntimeError("Persistent TV control store required")
+        if not re.fullmatch(r"[A-Za-z0-9]{22}", track_id):
+            raise ValueError("Invalid Spotify Connect track ID")
+        origin_app = self.foreground_app()
+        if not isinstance(origin_app, str):
+            self.enter_override("Spotify Connect: unreadable foreground; cannot take TV control")
+        previous = self.store.get_state("tv_control")
+        state = {"manual_override": False, "destination": self.destination,
+                 "generation": uuid.uuid4().hex, "video_id": None,
+                 "reason": "spotify_connect", "origin_app": origin_app,
+                 "claim_time": time.time()}
+        if not self.store.replace_control(previous, state):
+            raise ManualOverride("Control state changed during Spotify Connect claim")
+        self.override_logged = False
+        LOG.info("MANUAL_OVERRIDE_EXIT Spotify Connect new track=%s origin=%s", track_id, origin_app)
+        return state
+
     def claim_for_spotify(self, state, generation):
         """The user is choosing music in Spotify on the TV: that is the request to show its clip."""
         if not state or state.get("manual_override") is not False or state.get("destination") != self.destination:
@@ -142,8 +167,19 @@ class SmartTube:
         self.override_logged = False
         if generation is not None and generation != state.get("generation"):
             raise ManualOverride("Control session changed; pending work cancelled")
-        if state.get("destination") != self.destination or not state.get("video_id") or not state.get("generation"):
+        if state.get("destination") != self.destination or not state.get("generation"):
             self.enter_override("TV ownership missing or destination changed")
+        if state.get("reason") == "spotify_connect" and not state.get("video_id"):
+            # A phone-selected track may be playing while Home/another app is
+            # still foreground. This is permission to launch one clip, not a
+            # permanent ability to overwrite the user's other TV activity.
+            age = time.time() - state.get("claim_time", 0)
+            if (0 <= age <= self.cfg["matching_timeout_seconds"] + 60
+                    and app == state.get("origin_app") and isinstance(app, str)):
+                return state
+            self.enter_override("Spotify Connect pending session expired or foreground changed")
+        if not state.get("video_id"):
+            self.enter_override("TV ownership missing video identity")
         if app in (self.cfg["smarttube_package"], None) and time.monotonic() < self.sent_at + STARTUP_SECONDS:
             return state  # still loading: no focus yet, buffering, or the previous clip's session
         try:
