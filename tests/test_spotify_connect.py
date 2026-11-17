@@ -73,7 +73,8 @@ class SpotifyConnectActivationTests(unittest.TestCase):
 
     def test_paused_tv_session_never_grants_new_control(self):
         self.source.current.return_value = None
-        self.assertEqual(self.bridge.step(), "idle")
+        # No remote session means ownership remains disarmed, rather than idle.
+        self.assertEqual(self.bridge.step(), "manual_override")
         self.tv.claim_for_connect.assert_not_called()
         self.tv.send.assert_not_called()
 
