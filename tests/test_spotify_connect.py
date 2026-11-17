@@ -63,7 +63,7 @@ class SpotifyConnectActivationTests(unittest.TestCase):
     def test_next_phone_selected_track_rearms(self):
         self.assertEqual(self.bridge.step(), "sent")
         other = Track("3" * 22, "Another Song", ("Stromae",), 200)
-        self.store.remember(other, self.cfg, {**self.video, "id": "B" * 11})
+        self.store.remember(other, self.cfg, {**self.video, "id": "B" * 11,\n                                                  "title": "Stromae - Another Song (Official Music Video)",\n                                                  "duration": 200})
         self.source.current.return_value = other
         self.assertEqual(self.bridge.step(), "sent")
         self.assertEqual(self.tv.claim_for_connect.call_count, 2)
