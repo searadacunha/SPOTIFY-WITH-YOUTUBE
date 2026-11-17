@@ -112,8 +112,14 @@ def load_config():
         if set(custom) - set(cfg):
             raise ValueError(f"Unknown config options: {set(custom) - set(cfg)}")
         cfg.update(custom)
-    if cfg["spotify_source"] not in {"tv", "auto", "macos", "web"}:
-        raise ValueError("spotify_source must be tv, auto, macos or web")
+    if cfg["spotify_source"] not in {"tv", "auto", "macos", "web", "connect"}:
+        raise ValueError("spotify_source must be tv, auto, macos, web or connect")
+    device_id = cfg["spotify_connect_device_id"]
+    if (not isinstance(device_id, str) or len(device_id) > 256
+            or (device_id and (not device_id.strip() or any(ch.isspace() for ch in device_id)))):
+        raise ValueError("spotify_connect_device_id must be a nonblank device ID without whitespace")
+    if cfg["spotify_source"] == "connect" and not device_id:
+        raise ValueError("spotify_source connect needs spotify_connect_device_id (see ./smarttube devices)")
     if not re.fullmatch(r"[A-Za-z0-9.-]+:[0-9]{1,5}", cfg["tv_target"]):
         raise ValueError("tv_target must be host:port")
     if not 0 < int(cfg["tv_target"].rsplit(":", 1)[1]) < 65536:
