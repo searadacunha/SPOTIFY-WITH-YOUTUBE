@@ -93,7 +93,9 @@ class SmartTube:
         return True
 
     def next_on_spotify(self, video_id):
-        """Songs follow each other in Spotify: its next track comes back in front and gets its own clip."""
+        """Advance native Spotify TV only; never hijack a separate Cast/Connect receiver."""
+        if self.cfg["spotify_source"] == "connect":
+            self.enter_override("Remote clip ended: choose the next track from Spotify on your phone")
         self.handed_off = video_id
         self.probe.sessions("next")
         # Like the TV launcher: "am start" does not resolve a launcher intent without a component.
