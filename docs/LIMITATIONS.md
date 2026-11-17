@@ -15,7 +15,7 @@ Honest list of what the bridge does not do, as of rules version 7.
 ## Sources
 
 - The `tv` source reads **Spotify's TV app** (`com.spotify.tv.android`) only, with the
-  package names compiled into the probe. Spotify TV's video mode hides the artist:
+  package names compiled into the probe. The phone's Spotify Connect selection is visible only if this TV app has a playing media session; casting to a different receiver is not handled by the TV probe. Spotify TV's video mode hides the artist:
   it is read from the track's public page (`open.spotify.com/track/<id>`); while
   that page cannot be read, the track waits (retried every minute).
 - The `macos` and `web` sources are implemented and unit-tested but were not
@@ -62,8 +62,7 @@ Honest list of what the bridge does not do, as of rules version 7.
   bridge moves Spotify to its next track ([SMARTTUBE.md](SMARTTUBE.md)). Pausing the
   clip, or starting another video in SmartTube before its last 30 seconds, disarms
   the bridge: SmartTube's autoplay then goes on until you pick a track in Spotify TV.
-  Controlling the TV's Spotify from a phone (Spotify Connect) while SmartTube stays
-  in the foreground has not been verified.
+  Phone-originated Connect activation is now covered by mock tests, but has not been verified on TV hardware. With `spotify_connect_autostart: true`, a newly playing Spotify TV song can deliberately replace the current foreground app; the pending claim expires and is cancelled if that app changes. Changing tracks from the phone while SmartTube is already playing also needs hardware validation.
 - No synchronisation of pause, seek position or volume; every video starts from
   the beginning when the track changes.
 - Delivery of the intent does not guarantee playback (removed, private or
