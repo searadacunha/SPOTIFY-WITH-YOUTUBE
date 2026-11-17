@@ -40,7 +40,7 @@ class Bridge:
         try:
             preloaded, track_loaded = None, False
             if (not self.dry_run and self.cfg.get("spotify_connect_autostart", False)
-                    and self.source.name == "tv"):
+                    and self.source.name in {"tv", "connect"}):
                 # Read playback BEFORE focus/ownership checks: Spotify Connect may
                 # start the TV media session without foregrounding Spotify.
                 preloaded = self.source.current()

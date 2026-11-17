@@ -23,6 +23,16 @@ def from_local(data):
                  data["duration"] / 1000, data.get("album", ""))
 
 
+def from_connect(data, device_id):
+    """Only report playback on the explicitly configured TV, never a phone/speaker."""
+    if not isinstance(data, dict) or not device_id:
+        return None
+    device = data.get("device")
+    if not isinstance(device, dict) or device.get("id") != device_id or device.get("is_active") is False:
+        return None
+    return from_web(data)
+
+
 def from_web(data):
     if not data or not data.get("is_playing") or data.get("currently_playing_type") != "track":
         return None
@@ -49,7 +59,7 @@ def oauth():
     if not client_id():
         raise RuntimeError("Set SPOTIFY_CLIENT_ID in the project .env, then run ./smarttube login")
     return SpotifyPKCE(client_id=client_id(), redirect_uri="http://127.0.0.1:8765/callback",
-                       scope="user-read-currently-playing",
+                       scope="user-read-currently-playing user-read-playback-state",
                        cache_path=str(ROOT / "cache/spotify-token.json"),
                        requests_timeout=10, open_browser=False)
 
@@ -96,11 +106,12 @@ def login():
 
 class SpotifySource:
     def __init__(self, cfg):
+        self.cfg = cfg
         mode = cfg["spotify_source"]
         self.name = mode
         if mode == "auto":
             self.name = "web" if client_id() and (ROOT / "cache/spotify-token.json").exists() else "macos"
-        self.auth = oauth() if self.name == "web" else None
+        self.auth = oauth() if self.name in {"web", "connect"} else None
         if self.name == "tv":
             from tv_source import TVSource
             self.tv_source = TVSource(cfg)
@@ -117,6 +128,8 @@ class SpotifySource:
         api = spotipy.Spotify(auth=token["access_token"], requests_timeout=10,
                               retries=0, status_retries=0)
         try:
+            if self.name == "connect":
+                return from_connect(api.current_playback(), self.cfg["spotify_connect_device_id"])
             return from_web(api.current_user_playing_track())
         except spotipy.SpotifyException as exc:
             # Never log HTTP headers, tokens or OAuth responses.
@@ -129,3 +142,17 @@ class SpotifySource:
                     error.retry_after = 60
                 raise error from None
             raise RuntimeError(f"Spotify Web API HTTP {exc.http_status}") from None
+
+
+def available_devices():
+    """Read-only device discovery for explicit configuration; never log OAuth tokens."""
+    import spotipy
+    auth = oauth()
+    token = auth.validate_token(auth.cache_handler.get_cached_token())
+    if not token:
+        raise RuntimeError("Spotify Web API: authorization expired/missing; ./smarttube login")
+    api = spotipy.Spotify(auth=token["access_token"], requests_timeout=10,
+                          retries=0, status_retries=0)
+    result = api.devices() or {}
+    return [(device.get("name", ""), device.get("id"), device.get("type", ""),
+             bool(device.get("is_active"))) for device in result.get("devices", [])]

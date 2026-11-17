@@ -16,7 +16,7 @@ LABEL = "local.spotify-smarttube"
 DOMAIN = f"gui/{os.getuid()}"
 PLIST = Path.home() / "Library/LaunchAgents" / f"{LABEL}.plist"
 PYTHON = str(ROOT / ".venv/bin/python")
-COMMANDS = ["start", "stop", "status", "resume", "test", "logs", "run", "match", "login", "check"]
+COMMANDS = ["start", "stop", "status", "resume", "test", "logs", "run", "match", "login", "devices", "check"]
 
 
 def launchctl(*args):
@@ -135,6 +135,10 @@ def main():
     elif args.command == "login":
         from spotify_source import login
         login()
+    elif args.command == "devices":
+        from spotify_source import available_devices
+        for name, device_id, kind, active in available_devices():
+            print(f"{name} | {kind} | id={device_id or 'unavailable'} | active={active}")
     elif args.command == "check":
         from spotify_source import SpotifySource
         from smarttube_adb import SmartTube

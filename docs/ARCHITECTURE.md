@@ -7,7 +7,7 @@
 | `main.py` | `Bridge` (one polling step: source → dedup → cache/resolve → stale check → send) and the service loop (lock, backoff, heartbeat, logging). |
 | `common.py` | `Track` dataclass with validation, `load_config()` (defaults + overrides + range checks), `run()` (subprocess with timeout and error text). |
 | `tv_source.py` | Default source: pushes `android/classes.dex` to the TV and runs `MediaProbe` through `adb shell app_process`; parses the Spotify TV media session. |
-| `spotify_source.py` | `SpotifySource` facade: `tv`, `macos` (JXA on the Spotify desktop app), `web` (Spotify Web API with PKCE) and `auto`. `login()` for the web flow. |
+| `spotify_source.py` | `SpotifySource` facade: `tv`, `macos` (JXA), `web`, `auto` and `connect` (Web API playback gated to an exact device ID). `login()` and `available_devices()` for the API flow. |
 | `youtube_match.py` | `identity()` grammar, `search()`, `video_details()`, `score()`, `rank()`, `resolve()`, `AmbiguousMatch`. |
 | `audio_match.py` | `AudioComparator`: bounded yt-dlp + ffmpeg download/decode, spectral features, three-window comparison. |
 | `smarttube_adb.py` | `SmartTube`: targeted ADB commands, reconnect, package check, persistent ownership, pre-send foreground/video checks, guarded `VIEW` intent; no wake. |
