@@ -120,6 +120,23 @@ override instead of taking over.
 
 ## Spotify
 
+**Phone connects to the TV but only opening Spotify TV manually works** — Run
+`./smarttube check` while the phone is playing to the TV. If the `tv` source
+returns `Now playing: None`, Spotify TV has no readable active media session.
+That can occur if the phone chose Google Cast rather than the Spotify TV app.
+Follow the exact-device `connect` setup in [INSTALLATION.md](INSTALLATION.md#4-configuration),
+then run `./smarttube devices` with the TV active. If Spotify's API does not
+list a device with a stable ID, this mode cannot safely detect it. There is no
+supported method to turn SmartTube itself into a Spotify Connect receiver.
+
+**The `connect` source detects your phone/speaker, or fails to start** — Set
+`spotify_connect_device_id` to the **exact** ID reported by `./smarttube devices`
+while the TV is active, never the phone or speaker ID. A newly assigned ID needs
+an update to the config and a service restart. If authorization fails, run
+`./smarttube login` again to approve the playback-state scope. Development Mode
+requires Premium and has API rate limits. After SmartTube opens, Spotify playback
+may pause due to Android audio focus; choose the next song from the phone.
+
 **Spotify track not detected (`IDLE`)** — With the `tv` source: Spotify TV must be
 **playing** (not paused) a music track, not an ad or a podcast, and only one Spotify
 session may be active. `./smarttube check` prints what the probe sees; `TV media
