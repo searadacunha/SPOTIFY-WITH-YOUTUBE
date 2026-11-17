@@ -51,11 +51,7 @@ adb -s TV_IP:PORT shell am start -W \
 
 Expected: the TV wakes, SmartTube comes to the front and plays the video; the
 command prints `Status: ok` and an `Activity: org.smarttube.stable/…PlaybackActivity`
-line. This is a manual diagnostic you run yourself. The automatic bridge never
-wakes the TV and never opens SmartTube from another app than Spotify TV: its pre-send
-guard requires Spotify TV in front, or a SmartTube session you explicitly enabled with
-`./smarttube resume`, still in the foreground and still playing the video the bridge
-last sent.
+line. This is a manual diagnostic you run yourself. The automatic bridge never wakes the TV. Normally it requires Spotify in front or a SmartTube session that the bridge owns. When `spotify_connect_autostart` is enabled, a newly playing Spotify TV track selected using Spotify Connect from the phone also authorizes one SmartTube video launch, even when Spotify is not foreground. The temporary permission expires and is tied to the foreground app at selection time; this new path still requires hardware testing.
 
 If `am start` prints `Error: Activity not started, unable to resolve Intent`, the
 package name is wrong or SmartTube is not installed. Note that `am start` exits with
