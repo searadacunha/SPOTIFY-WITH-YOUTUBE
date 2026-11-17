@@ -52,7 +52,7 @@ cp config.example.json config.json
 ```
 
 Edit `config.json`: set `tv_target` to the exact `host:port` shown by `adb devices`.
-Leave the rest initially. The complete defaults are in `config.example.json`;
+Leave the rest initially. By default, `spotify_connect_autostart` is `true`: a new Spotify Connect song selected on the phone and played on the TV can trigger SmartTube without first opening Spotify on the TV. Set it to `false` for manual-only activation. The complete defaults are in `config.example.json`;
 matching settings are explained in [MATCHING.md](MATCHING.md). The file is git-ignored.
 
 Optional, only for the Spotify Web API source: `cp .env.example .env`, set
@@ -85,10 +85,7 @@ The first resolution of a track can take tens of seconds.
 ./smarttube logs       # Ctrl-C stops the tail only
 ```
 
-The service starts disarmed. Pick a song in Spotify on the TV: Spotify in front arms
-it. Or open SmartTube yourself, play a video, then run `./smarttube resume` to
-explicitly adopt that playback (this command launches no video). Switching to any
-other app disarms sync again; going back to Spotify TV re-arms it. Details and
+The service starts disarmed. To activate it, select your TV as the Spotify Connect destination **from Spotify on the phone**, then play a song. A fresh playing Spotify TV media session automatically arms the bridge; opening Spotify on the TV is not required. You can still start a song in Spotify TV or explicitly run `./smarttube resume` while SmartTube plays. Switching to another app normally disarms sync; starting a new Spotify TV track (including via Connect) re-arms it. Details and
 uninstallation: [docs/MACOS_SERVICE.md](MACOS_SERVICE.md).
 
 ## Upgrading
@@ -101,7 +98,7 @@ git pull
 ./smarttube start
 ```
 
-After an upgrade/start, pick a song in Spotify TV (or resume while SmartTube plays).
+After an upgrade/start, select the TV with Spotify Connect and play a new song, pick one in Spotify TV, or resume while SmartTube plays.
 A new `SCORING_VERSION` invalidates cached matching decisions but never the last sent track. If yt-dlp stops
 working because YouTube changed, bump `yt-dlp` **and** `yt-dlp-ejs` together to the
 versions yt-dlp declares compatible.
