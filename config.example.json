@@ -1,5 +1,6 @@
 {
   "spotify_source": "tv",
+  "spotify_connect_autostart": true,
   "tv_target": "192.168.x.x:5555",
   "smarttube_package": "org.smarttube.stable",
   "adb_path": "adb",

@@ -70,7 +70,7 @@ port can differ. See [ADB setup](docs/ADB.md) and
 
 ### 3. Check and preview
 
-Play a track in Spotify on the TV, then run:
+Play a track using Spotify Connect **from your phone to the TV**, or play one in Spotify directly on the TV, then run:
 
 ```sh
 ./smarttube check
@@ -89,9 +89,7 @@ It still reads the TV and writes local diagnostic logs.
 ./smarttube logs
 ```
 
-The service starts disarmed. **Choose a song in Spotify on the TV to activate it.**
-You can also open SmartTube, play a video, then run `./smarttube resume` to adopt
-that session explicitly. Returning to SmartTube alone does not re-enable it.
+The service starts disarmed, but **selecting the TV from Spotify Connect on your phone and starting a song** now activates it automatically, without manually opening Spotify on the TV, when its Spotify media session is readable over ADB. Choosing a song directly in Spotify TV still works. `./smarttube resume` remains available to adopt a manually opened SmartTube video. Set `spotify_connect_autostart` to `false` to restore the prior manual-only mode.
 
 Full setup, optional Spotify Web API login and updates:
 [Installation guide](docs/INSTALLATION.md).
@@ -156,8 +154,7 @@ Full scoring rules, reference selection and examples:
 
 ## Playback control
 
-Spotify on the TV, or an explicit `resume`, authorizes the bridge to act. Leaving
-SmartTube, pausing, losing readable state or replacing a clip normally disarms it.
+Spotify on the TV, a new playing Spotify Connect track on the TV, or an explicit `resume`, authorizes the bridge to act. Phone-originated activation is time-limited and tied to the observed foreground app. Leaving SmartTube, pausing, losing readable state or replacing a clip normally disarms it.
 A short startup grace period allows SmartTube to load after a send.
 
 At a controlled clip's end, the bridge rechecks focus, playback position and the
@@ -183,8 +180,7 @@ Audio similarity compares YouTube publications, not Spotify's actual stream. The
 thresholds are empirical and no catalogue-wide error rate has been established.
 A delivered Android intent also does not prove the video actually played.
 
-The service targets one TV and macOS. Official YouTube TV is not supported with
-the same ownership checks as SmartTube. See [all limitations](docs/LIMITATIONS.md).
+The service targets one TV and macOS. Phone-originated Spotify Connect requires the TV Spotify app's own media session; Chromecast/Google Cast receivers may not be visible to this source. Remote activation has unit tests but still needs real-TV validation. Official YouTube TV is not supported with the same ownership checks as SmartTube. See [all limitations](docs/LIMITATIONS.md).
 
 ## Development
 

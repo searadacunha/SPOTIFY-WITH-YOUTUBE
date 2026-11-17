@@ -84,11 +84,13 @@ touching ADB, the probe or the sources:
 2. Manual intent ([SMARTTUBE.md](SMARTTUBE.md#manual-test-do-this-first)).
 3. `./smarttube test` while Spotify TV plays a track with a known official video:
    expect `SELECTED <id>` and `DRY-RUN`.
-4. `./smarttube start` while SmartTube or another app is in front: expect
-   `MANUAL_OVERRIDE_ACTIVE` and no intent, whatever Spotify plays (startup is disarmed).
-5. Pick a track in Spotify on the TV: expect `MANUAL_OVERRIDE_EXIT Spotify in front`
-   then `SENT`. Or open SmartTube, play any video, `./smarttube resume`: expect
-   `MANUAL_OVERRIDE_EXIT explicit resume video=<id>`.
+4. `./smarttube start` while another app is in front and there is no new
+   playing Spotify TV media session: expect `MANUAL_OVERRIDE_ACTIVE` and no intent.
+5. From Spotify on your phone, select the TV as the Spotify Connect output and
+   start a new song. Expect `MANUAL_OVERRIDE_EXIT Spotify Connect` then `SENT`.
+   Verify that SmartTube starts even when Spotify TV was not opened manually.
+   Alternatively pick a track in Spotify on the TV or run `./smarttube resume`
+   while SmartTube is already playing.
 6. Change track in Spotify: expect `SENT` within the resolution time; replay the same
    track right away: expect `SEND_BLOCKED_ALREADY_HANDLED`; A → B → A: expect `SENT`.
 7. Open another app on the TV: expect `SEND_BLOCKED_FOREGROUND_APP` then

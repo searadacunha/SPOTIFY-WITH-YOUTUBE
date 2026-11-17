@@ -55,8 +55,9 @@ Return values of `Bridge.step()` (also the `status` field shown by `./smarttube 
   Web API `429` uses its `Retry-After` (60 s to 1 day).
 - Search failures and ambiguity use backoff per track while control remains valid.
   TV inspection failures and uncertain delivery disarm control instead of retrying.
-- Every real service start is disarmed until Spotify TV is in front or an explicit
-  `resume`. Control is checked on each
+- Every real service start is disarmed, but a new playing Spotify TV media session
+  selected with Spotify Connect from the phone also arms it when
+  `spotify_connect_autostart` is enabled. An explicit `resume` remains supported. Control is checked on each
   poll, during backoff and during external search/audio processes. Manual override
   cancels retries and kills the running download/process group.
 - `runtime` state (pid, source, status, time) is written to SQLite on every status

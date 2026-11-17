@@ -403,7 +403,9 @@ class UserPriorityTests(unittest.TestCase):
         process.communicate.assert_called_once_with()
 
     def test_service_start_disarms_previous_control_without_sending(self):
+        # Explicit manual-only compatibility mode: remote Connect auto-arm is disabled.
         import main
+        self.cfg["spotify_connect_autostart"] = False
         self.activate()
         self.source.name = "tv"
         with patch("main.ROOT", self.root), patch("main.load_config", return_value=self.cfg), \

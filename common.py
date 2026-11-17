@@ -132,7 +132,7 @@ def load_config():
             raise ValueError(f"{name}: expected a value between {low} and {high}")
     if type(cfg["search_results"]) is not int:
         raise ValueError("search_results must be an integer")
-    for name in ("prefer_official", "allow_audio_fallback"):
+    for name in ("prefer_official", "allow_audio_fallback", "spotify_connect_autostart"):
         if type(cfg[name]) is not bool:
             raise ValueError(f"{name} must be a boolean")
     return cfg
